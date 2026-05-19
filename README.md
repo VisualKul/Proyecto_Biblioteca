@@ -7,6 +7,7 @@ multas, listas personales, notificaciones, sugerencias y valoraciones.
 ## Integrantes del equipo
 
 | Nombre | Aporte |
+|---|---|
 | Diego Patricio Soto León | Auth - User - Security - Inventario - Prestamos - Multas |
 | Nabih Aballay | Sugerencias - Favoritos |
 | Cristobal Retamal Carrera| Notificaciones - Valoraciones |
@@ -15,6 +16,7 @@ multas, listas personales, notificaciones, sugerencias y valoraciones.
 ## Microservicios
 
 | # | Servicio | Puerto | BD | Descripcion |
+|---|---|---|---|---|
 | 0 | `eureka-server` | 8761 | — | Registry / Service Discovery |
 | 1 | `auth-service` | 8083 | `library_auth_db` | Login y emision de JWT |
 | 2 | `user-service` | 8081 | `library_users_db` | CRUD de usuarios |
@@ -31,6 +33,7 @@ multas, listas personales, notificaciones, sugerencias y valoraciones.
 ## Comunicacion entre microservicios (Feign)
 
 | Origen | Destino | Proposito |
+|---|---|---|
 | auth-service | user-service | Obtener usuario y validar password |
 | auth-service | security-service | Obtener roles para el JWT |
 | security-service | user-service | Validar existencia del usuario al asignar rol |
@@ -48,7 +51,6 @@ multas, listas personales, notificaciones, sugerencias y valoraciones.
 | ms-valoraciones | ms-inventario | Validar libro a valorar |
 
 ## Funcionalidades implementadas
-
 - Autenticacion JWT (`POST /api/auth/login`)
 - CRUD completo de usuarios, libros, roles, prestamos, listas, sugerencias,
   valoraciones, notificaciones y multas
@@ -72,7 +74,6 @@ microservicios + el gateway deben aparecer en `Instances currently registered`.
 ### SQL
 
 Para la creación de las bases de datos, se adjuntan 2 SQL en el proyecto, en los cuales hay que ejecutarlos en orden en el perfil de phpadmin de la instancia de XAMPP
-
 
 
 ## Endpoints principales (via API Gateway en `http://localhost:8080`)
