@@ -1,11 +1,26 @@
+# 🚀 SISTEMA DE MICROSERVICIOS MULTIMÓDULO - ENTREGA FINAL
+
+## 📦 COMPONENTES DE DISTRIBUCIÓN Y DEFENSA TÉCNICA
+
+Utilice los siguientes enlaces externos para descargar las versiones listas para producción y visualizar la defensa del proyecto:
+
+| Componente | Descripción | Enlace de Descarga (Nube externa) |
+| :--- | :--- | :--- |
+| **📦 Versión Sin Docker** <br>*(Arranque Nativo)* | Archivo `.zip` que contiene la carpeta `apps/` con los `.jar` compilados y el script `arrancar-nativo.bat` ordenado por fases. | [Descargar ZIP Nativo aquí](ENLACE_A_DRIVE_AQUÍ) |
+| **🐳 Versión Con Docker** <br>*(Avance Examen Transversal)* | Archivo `.zip` que contiene la carpeta `apps/` con los `.jar`, el archivo `docker-compose.yml` y el script automatizado `arrancar-sistema.bat`. | [Descargar ZIP Docker aquí](ENLACE_A_DRIVE_AQUÍ) |
+| **🎥 Video de Defensa Técnica** <br>*(Evaluación Individual)* | Enlace directo al video explicativo donde se evidencia el funcionamiento, testing y el aporte técnico individual. **Duración ideal: 15 minutos (Máximo permitido: 18 minutos).** | [Ver Video Explicativo aquí](ENLACE_A_VIDEO_AQUÍ) |
+
+> ⚠️ Reemplaza `ENLACE_A_DRIVE_AQUÍ` y `ENLACE_A_VIDEO_AQUÍ` por tus enlaces públicos (Google Drive u otra nube con acceso abierto) antes de la entrega.
+
+---
+
 # Sistema de Biblioteca - Arquitectura de Microservicios
 
 Proyecto semestral DSY1103 (Desarrollo FullStack 1). Sistema distribuido para la
 gestion completa de una biblioteca: usuarios, roles, prestamos, inventario,
 multas, listas personales, notificaciones, sugerencias y valoraciones.
-
-## Link Video
-[Link video](https://www.youtube.com/watch?v=553wKZcdLow)
+Construido como **proyecto Maven multi-módulo** con un POM padre que gobierna
+los 12 módulos (Spring Boot 4.0.6 / Spring Cloud 2025.1.1).
 
 ## Integrantes del equipo
 
@@ -13,8 +28,7 @@ multas, listas personales, notificaciones, sugerencias y valoraciones.
 |---|---|
 | Diego Patricio Soto León | Auth - User - Security - Inventario - Prestamos - Multas |
 | Nabih Aballay | Sugerencias - Favoritos |
-| Cristopher Retamal Carrera| Notificaciones - Valoraciones |
-
+| Cristopher Retamal Carrera | Notificaciones - Valoraciones |
 
 ## Microservicios
 
@@ -67,17 +81,111 @@ multas, listas personales, notificaciones, sugerencias y valoraciones.
 - Manejo centralizado de excepciones con `@RestControllerAdvice`
 - Logs estructurados SLF4J en todas las capas
 
-## Pasos para ejecutar
+---
 
-Abrir el proyecto completo en VS-Code, abrir una instancia de XAMPP, levantando el servicio de apache y Mysql, ejecutar y esperar a levantar el servicio de Eureka, ejecutar el resto de microservicios en orden, por ultimo abriendo Api-Getaway.
+## 🛠️ Instrucciones de uso
 
-Verifica el registro en `http://localhost:8761` (dashboard de Eureka). Los 10
-microservicios + el gateway deben aparecer en `Instances currently registered`.
+### Requisitos previos
+- **JDK 21** o superior.
+- **Maven** (o usar el wrapper `mvnw` / `mvnw.cmd` incluido en cada módulo).
+- **MySQL** activo en el puerto **3307** (por ejemplo vía XAMPP). Cada servicio
+  crea su BD con `createDatabaseIfNotExist=true`.
 
-### SQL
+### 1) Preparar las bases de datos
+En phpMyAdmin (XAMPP) ejecuta, **en orden**, los scripts de la carpeta `Bases de datos/`:
 
-Para la creación de las bases de datos, se adjuntan 2 SQL en el proyecto, en los cuales hay que ejecutarlos en orden en el perfil de phpadmin de la instancia de XAMPP
+1. `01_create_databases.sql`
+2. `02_seed_roles.sql`
 
+### 2) Construir los `.jar` (proyecto multi-módulo)
+Desde la raíz del proyecto, una sola orden compila y empaqueta **todo el reactor**:
+
+```bat
+mvn clean package
+```
+
+O usa el script incluido (omite los tests para ir más rápido):
+
+```bat
+construir-jars.bat
+```
+
+Cada módulo genera su jar ejecutable en `<módulo>\target\<artifactId>-0.0.1-SNAPSHOT.jar`.
+
+### 3) Arrancar el sistema (modo nativo, por fases cronometradas)
+```bat
+arrancar-nativo.bat
+```
+Orden de arranque que respeta los tiempos:
+1. **Eureka Server** → espera **30 s**.
+2. **Los 10 microservicios de negocio** (todos menos el gateway) → espera **40 s**.
+3. **API Gateway**.
+
+Cada servicio abre su propia ventana con sus logs. El script usa rutas relativas
+a su ubicación (`%~dp0`), por lo que **funciona aunque muevas la carpeta**.
+
+### 4) Verificar
+- Dashboard de Eureka: `http://localhost:8761` (deben aparecer los 12 registros).
+- Acceso unificado por el gateway: `http://localhost:8080` (p. ej. `/api/users/...`).
+
+### 5) Detener el sistema
+```bat
+detener-nativo.bat
+```
+Cierra **solo** los procesos `java` lanzados desde la carpeta del proyecto.
+
+### Ejecutar los tests
+```bat
+mvn test
+```
+Los tests unitarios (JUnit 5 + Mockito) usan **H2 en memoria** y **no requieren**
+MySQL ni Eureka levantados.
+
+---
+
+## ✅ Testing
+
+Cobertura de tests unitarios en los 10 microservicios de negocio, en las tres capas:
+
+- **Servicio** — Mockito puro (`@Mock` repositorios y Feign clients, `@InjectMocks`).
+- **Controlador** — `MockMvc` standalone con el `GlobalExceptionHandler`.
+- **Repositorio** — `@DataJpaTest` con base de datos **H2** en memoria.
+
+Total: **31 clases de test** / **215 métodos `@Test`**. Detalle en `TESTS_README.md`
+y la arquitectura multi-módulo en `MULTIMODULO_README.md`.
+
+---
+
+## 📝 Changelog
+
+### v3.0 — Entrega Final
+- **Migración a Maven multi-módulo**: nuevo POM padre `com.biblioteca:biblioteca-parent`
+  (`packaging pom`) que agrega y gobierna los 12 módulos; los hijos heredan versión,
+  propiedades y BOM de Spring Cloud.
+- **Unificación de versiones**: todo el sistema a **Spring Boot 4.0.6** /
+  **Spring Cloud 2025.1.1** (eureka y gateway estaban en 3.5.13 / 2025.0.2).
+- **API Gateway** migrado al starter `spring-cloud-starter-gateway-server-webflux`
+  (Spring Cloud Gateway 5.0) y configuración movida al namespace
+  `spring.cloud.gateway.server.webflux.*`.
+- **Tests unitarios JUnit 5 + Mockito** (service / controller / repository) en los
+  10 servicios de negocio; dependencia **H2** de test añadida a cada módulo.
+- **Configuración de test** (`src/test/resources/application.properties`) con H2 y
+  Eureka desactivado, para que los `@SpringBootTest` arranquen sin infraestructura.
+- **Corrección de paquetes** de los `*ApplicationTests` (estaban en `com.bilbioteca.*`
+  y `example.*`, no coincidían con la clase `@SpringBootApplication`).
+- **Scripts de operación**: `construir-jars.bat`, `arrancar-nativo.bat`
+  (por fases cronometradas, portable) y `detener-nativo.bat`.
+- **`.gitignore`** con la política del proyecto (sin `target/`, `.jar`, instaladores,
+  ejecutables `.bat`/`.sh` ni datos locales de BD).
+
+### v2.0 — Avance Examen Transversal
+- Versión con Docker (`docker-compose.yml` y script `arrancar-sistema.bat`).
+
+### v1.0 — Entrega inicial
+- Implementación de los 10 microservicios de negocio, `eureka-server` y `api-gateway`
+  con comunicación vía Feign y descubrimiento por Eureka.
+
+---
 
 ## Licencia
 

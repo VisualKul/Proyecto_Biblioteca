@@ -81,3 +81,6 @@ nbproject/private/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# ---------- Paquete de despliegue nativo (se distribuye como .zip en la nube, no por Git) ----------
+biblioteca-deploy-nativo/
