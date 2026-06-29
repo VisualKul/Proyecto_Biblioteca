@@ -72,4 +72,32 @@ public class LibroService {
     public Libro buscarPorIsbn(String isbn) {
         return repository.findByIsbn(isbn).orElse(null);
     }
+
+    public void descontarStock(Long id) {
+
+        Libro libro = repository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Libro no encontrado"));
+
+        if (libro.getStock() <= 0) {
+            throw new IllegalArgumentException("No hay stock disponible");
+        }
+
+        libro.setStock(libro.getStock() - 1);
+
+        repository.save(libro);
+
+        log.info("Stock descontado libro={} stock={}", id, libro.getStock());
+    }
+
+    public void devolverStock(Long id) {
+
+        Libro libro = repository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Libro no encontrado"));
+
+        libro.setStock(libro.getStock() + 1);
+
+        repository.save(libro);
+
+        log.info("Stock incrementado libro={} stock={}", id, libro.getStock());
+    }
 }

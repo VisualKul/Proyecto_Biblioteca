@@ -86,4 +86,16 @@ public class LibroController {
         }
         return ResponseEntity.ok(libro);
     }
+
+    @PutMapping("/descontar/{id}")
+    public ResponseEntity<Object> descontarStock(@PathVariable Long id) {
+    service.descontarStock(id);
+    return ResponseEntity.ok("Stock actualizado");
+    }
+
+    @PutMapping("/devolver/{id}")
+    public ResponseEntity<Object> devolverStock(@PathVariable Long id) {
+    service.devolverStock(id);
+    return ResponseEntity.ok("Stock actualizado");
+    }
 }

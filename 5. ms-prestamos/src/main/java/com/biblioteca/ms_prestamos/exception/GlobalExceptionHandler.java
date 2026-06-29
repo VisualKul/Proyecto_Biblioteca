@@ -27,10 +27,22 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, "Datos de entrada invalidos", errores);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, Object>> handleNotFound(IllegalArgumentException ex) {
-        log.warn("Validacion de negocio: {}", ex.getMessage());
-        return build(HttpStatus.NOT_FOUND, ex.getMessage(), null);
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex) {
+        log.warn("Recurso no encontrado: {}", ex.getMessage());
+    return build(HttpStatus.NOT_FOUND, ex.getMessage(), null);
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<Map<String, Object>> handleBusiness(BusinessException ex) {
+        log.warn("Regla de negocio: {}", ex.getMessage());
+    return build(HttpStatus.CONFLICT, ex.getMessage(), null);
+    }
+
+    @ExceptionHandler(ServiceUnavailableException.class)
+    public ResponseEntity<Map<String, Object>> handleUnavailable(ServiceUnavailableException ex) {
+        log.error("Servicio dependiente indisponible: {}", ex.getMessage());
+    return build(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage(), null);
     }
 
     @ExceptionHandler(IllegalStateException.class)
@@ -46,6 +58,7 @@ public class GlobalExceptionHandler {
                 ex.getMessage() == null ? "Error desconocido" : ex.getMessage(), null);
     }
 
+    
     private ResponseEntity<Map<String, Object>> build(HttpStatus status, String message, Map<String, String> details) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", Instant.now().toString());
