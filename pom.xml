@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<!-- Hereda de Spring Boot para gestionar versiones de Boot en todos los modulos -->
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>4.0.6</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+
+	<groupId>com.biblioteca</groupId>
+	<artifactId>biblioteca-parent</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>biblioteca-parent</name>
+	<description>POM padre del sistema de biblioteca basado en microservicios</description>
+
+	<properties>
+		<java.version>21</java.version>
+		<spring-cloud.version>2025.1.1</spring-cloud.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<!-- Modulos hijos del reactor (orden de arranque logico) -->
+	<modules>
+		<module>0. eureka-server</module>
+		<module>1. auth-service</module>
+		<module>2. user-service</module>
+		<module>3. security-service</module>
+		<module>4. ms-inventario</module>
+		<module>5. ms-prestamos</module>
+		<module>6. ms-multas</module>
+		<module>7. ms-favoritos-listas</module>
+		<module>8. ms-notificaciones</module>
+		<module>9. ms-sugerencias</module>
+		<module>10. ms-valoraciones</module>
+		<module>99. api-gateway</module>
+	</modules>
+
+	<!-- BOM de Spring Cloud heredado por todos los modulos -->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+</project>

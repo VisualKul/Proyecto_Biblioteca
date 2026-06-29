@@ -6,73 +6,77 @@ spring:
     name: api-gateway
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
+      # En Spring Cloud Gateway 5.0 (Spring Cloud 2025.1) la configuracion
+      # se movio al namespace server.webflux.*
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
 
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOrigins: "*"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
-            allowedHeaders: "*"
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins: "*"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - DELETE
+                  - OPTIONS
+                allowedHeaders: "*"
 
-      routes:
-        - id: auth-service-route
-          uri: lb://auth-service
-          predicates:
-            - Path=/api/auth/**
+          routes:
+            - id: auth-service-route
+              uri: lb://auth-service
+              predicates:
+                - Path=/api/auth/**
 
-        - id: user-service-route
-          uri: lb://user-service
-          predicates:
-            - Path=/api/users/**
+            - id: user-service-route
+              uri: lb://user-service
+              predicates:
+                - Path=/api/users/**
 
-        - id: security-service-route
-          uri: lb://security-service
-          predicates:
-            - Path=/api/security/**
+            - id: security-service-route
+              uri: lb://security-service
+              predicates:
+                - Path=/api/security/**
 
-        - id: ms-inventario
-          uri: lb://ms-inventario
-          predicates:
-            - Path=/inventario/**
+            - id: ms-inventario
+              uri: lb://ms-inventario
+              predicates:
+                - Path=/inventario/**
 
-        - id: ms-prestamos
-          uri: lb://ms-prestamos
-          predicates:
-            - Path=/prestamos/**
+            - id: ms-prestamos
+              uri: lb://ms-prestamos
+              predicates:
+                - Path=/prestamos/**
 
-        - id: ms-multas
-          uri: lb://ms-multas
-          predicates:
-            - Path=/multas/**
+            - id: ms-multas
+              uri: lb://ms-multas
+              predicates:
+                - Path=/multas/**
 
-        - id: ms-favoritos-listas
-          uri: lb://ms-favoritos-listas
-          predicates:
-            - Path=/api/listas/**
+            - id: ms-favoritos-listas
+              uri: lb://ms-favoritos-listas
+              predicates:
+                - Path=/api/listas/**
 
-        - id: ms-notificaciones
-          uri: lb://ms-notificaciones
-          predicates:
-            - Path=/api/notificaciones/**
+            - id: ms-notificaciones
+              uri: lb://ms-notificaciones
+              predicates:
+                - Path=/api/notificaciones/**
 
-        - id: ms-sugerencias
-          uri: lb://ms-sugerencias
-          predicates:
-            - Path=/api/sugerencias/**
+            - id: ms-sugerencias
+              uri: lb://ms-sugerencias
+              predicates:
+                - Path=/api/sugerencias/**
 
-        - id: ms-valoraciones
-          uri: lb://ms-valoraciones
-          predicates:
-            - Path=/api/valoraciones/**
+            - id: ms-valoraciones
+              uri: lb://ms-valoraciones
+              predicates:
+                - Path=/api/valoraciones/**
 
 eureka:
   client:
