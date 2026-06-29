@@ -6,11 +6,11 @@ Utilice los siguientes enlaces externos para descargar las versiones listas para
 
 | Componente | Descripción | Enlace de Descarga (Nube externa) |
 | :--- | :--- | :--- |
-| **📦 Versión Sin Docker** <br>*(Arranque Nativo)* | Archivo `.zip` que contiene la carpeta `apps/` con los `.jar` compilados y el script `arrancar-nativo.bat` ordenado por fases. | [Descargar ZIP Nativo aquí](ENLACE_A_DRIVE_AQUÍ) |
-| **🐳 Versión Con Docker** <br>*(Avance Examen Transversal)* | Archivo `.zip` que contiene la carpeta `apps/` con los `.jar`, el archivo `docker-compose.yml` y el script automatizado `arrancar-sistema.bat`. | [Descargar ZIP Docker aquí](ENLACE_A_DRIVE_AQUÍ) |
-| **🎥 Video de Defensa Técnica** <br>*(Evaluación Individual)* | Enlace directo al video explicativo donde se evidencia el funcionamiento, testing y el aporte técnico individual. **Duración ideal: 15 minutos (Máximo permitido: 18 minutos).** | [Ver Video Explicativo aquí](ENLACE_A_VIDEO_AQUÍ) |
+| **📦 Versión Sin Docker** <br>*(Arranque Nativo)* | Archivo `.zip` que contiene la carpeta `apps/` con los `.jar` compilados y el script `arrancar-nativo.bat` ordenado por fases. | [Descargar ZIP Nativo aquí]() |
+| **🐳 Versión Con Docker** <br>*(Avance Examen Transversal)* | Archivo `.zip` que contiene la carpeta `apps/` con los `.jar`, el archivo `docker-compose.yml` y el script automatizado `arrancar-sistema.bat`. | [PENDIENTE] |
+| **🎥 Video de Defensa Técnica** <br>*(Evaluación Individual)* | Enlace directo al video explicativo donde se evidencia el funcionamiento, testing y el aporte técnico individual. **Duración ideal: 15 minutos (Máximo permitido: 18 minutos).** | [PENDIENTE - POR SUBIR](ENLACE_A_VIDEO_AQUÍ) |
 
-> ⚠️ Reemplaza `ENLACE_A_DRIVE_AQUÍ` y `ENLACE_A_VIDEO_AQUÍ` por tus enlaces públicos (Google Drive u otra nube con acceso abierto) antes de la entrega.
+
 
 ---
 
@@ -26,9 +26,7 @@ los 12 módulos (Spring Boot 4.0.6 / Spring Cloud 2025.1.1).
 
 | Nombre | Aporte |
 |---|---|
-| Diego Patricio Soto León | Auth - User - Security - Inventario - Prestamos - Multas |
-| Nabih Aballay | Sugerencias - Favoritos |
-| Cristopher Retamal Carrera | Notificaciones - Valoraciones |
+| Diego Patricio Soto León | Auth - User - Security - Inventario - Prestamos - Multas - Sugerencias - Favoritos - Notificaciones - Valoraciones|
 
 ## Microservicios
 
@@ -143,6 +141,84 @@ MySQL ni Eureka levantados.
 
 ---
 
+## 📖 Documentación de la API (Swagger / OpenAPI)
+
+Cada microservicio expone su documentación interactiva con **springdoc-openapi**.
+Con el sistema arrancado, abre en el navegador la Swagger UI del servicio que quieras:
+
+```
+http://localhost:<puerto>/swagger-ui.html
+```
+
+| Servicio | Swagger UI | OpenAPI (JSON) |
+|---|---|---|
+| user-service | http://localhost:8081/swagger-ui.html | http://localhost:8081/v3/api-docs |
+| security-service | http://localhost:8082/swagger-ui.html | http://localhost:8082/v3/api-docs |
+| auth-service | http://localhost:8083/swagger-ui.html | http://localhost:8083/v3/api-docs |
+| ms-inventario | http://localhost:8084/swagger-ui.html | http://localhost:8084/v3/api-docs |
+| ms-prestamos | http://localhost:8085/swagger-ui.html | http://localhost:8085/v3/api-docs |
+| ms-multas | http://localhost:8086/swagger-ui.html | http://localhost:8086/v3/api-docs |
+| ms-favoritos-listas | http://localhost:8087/swagger-ui.html | http://localhost:8087/v3/api-docs |
+| ms-notificaciones | http://localhost:8088/swagger-ui.html | http://localhost:8088/v3/api-docs |
+| ms-sugerencias | http://localhost:8089/swagger-ui.html | http://localhost:8089/v3/api-docs |
+| ms-valoraciones | http://localhost:8090/swagger-ui.html | http://localhost:8090/v3/api-docs |
+
+> Swagger se consulta en el **puerto propio de cada servicio**, no a través del gateway.
+
+### Cómo probar un endpoint en Swagger UI
+1. Abre la URL de la Swagger UI del servicio.
+2. Despliega el endpoint que quieras y pulsa **"Try it out"**.
+3. Completa el cuerpo de la petición (JSON) o los parámetros.
+4. Pulsa **"Execute"** y revisa la respuesta (código HTTP y body).
+
+### Ejemplo de flujo de uso (end-to-end)
+
+**1) Crear un usuario** — `user-service` → `POST /api/users` (`http://localhost:8081/swagger-ui.html`)
+```json
+{
+  "nombre": "Diego Soto",
+  "email": "diego@biblioteca.com",
+  "password": "1234",
+  "telefono": "912345678"
+}
+```
+
+**2) Iniciar sesión y obtener el JWT** — `auth-service` → `POST /api/auth/login` (`http://localhost:8083/swagger-ui.html`)
+```json
+{
+  "email": "diego@biblioteca.com",
+  "password": "1234"
+}
+```
+Respuesta:
+```json
+{ "token": "eyJhbGciOiJIUzI1NiJ9..." }
+```
+
+**3) Registrar un libro** — `ms-inventario` → `POST /inventario/crear` (`http://localhost:8084/swagger-ui.html`)
+```json
+{
+  "titulo": "Cien años de soledad",
+  "autor": "Gabriel García Márquez",
+  "isbn": "9780307474728",
+  "editorial": "Sudamericana",
+  "stock": 5
+}
+```
+
+**4) Registrar un préstamo** — `ms-prestamos` → `POST /prestamos/registrar` (`http://localhost:8085/swagger-ui.html`)
+```json
+{
+  "emailUsuario": "diego@biblioteca.com",
+  "libroId": 1,
+  "fechaDevolucion": "2026-12-31"
+}
+```
+El servicio valida por Feign que el usuario y el libro existan, que haya stock y que
+el usuario no tenga multas pendientes antes de crear el préstamo.
+
+---
+
 ## ✅ Testing
 
 Cobertura de tests unitarios en los 10 microservicios de negocio, en las tres capas:
@@ -158,7 +234,7 @@ y la arquitectura multi-módulo en `MULTIMODULO_README.md`.
 
 ## 📝 Changelog
 
-### v3.0 — Entrega Final
+### v2.0 — Entrega Final
 - **Migración a Maven multi-módulo**: nuevo POM padre `com.biblioteca:biblioteca-parent`
   (`packaging pom`) que agrega y gobierna los 12 módulos; los hijos heredan versión,
   propiedades y BOM de Spring Cloud.
@@ -178,8 +254,6 @@ y la arquitectura multi-módulo en `MULTIMODULO_README.md`.
 - **`.gitignore`** con la política del proyecto (sin `target/`, `.jar`, instaladores,
   ejecutables `.bat`/`.sh` ni datos locales de BD).
 
-### v2.0 — Avance Examen Transversal
-- Versión con Docker (`docker-compose.yml` y script `arrancar-sistema.bat`).
 
 ### v1.0 — Entrega inicial
 - Implementación de los 10 microservicios de negocio, `eureka-server` y `api-gateway`
