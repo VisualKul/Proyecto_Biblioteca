@@ -1,0 +1,83 @@
+# ============================================================
+#  .gitignore - Sistema de Biblioteca (Maven multi-modulo)
+#
+#  Politica del proyecto: NO se suben artefactos compilados,
+#  carpetas target/, instaladores empaquetados, ejecutables
+#  .bat / .sh, ni datos locales de bases de datos.
+# ============================================================
+
+# ---------- Compilados / salida de build de Maven ----------
+target/
+**/target/
+
+# ---------- Artefactos compilados (JAR / WAR / EAR) ----------
+*.jar
+*.war
+*.ear
+*.class
+
+# ---------- Instaladores y paquetes empaquetados ----------
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+*.exe
+*.msi
+*.dmg
+*.pkg
+*.deb
+*.rpm
+*.apk
+
+# ---------- Ejecutables de scripts ----------
+# (incluye arrancar-nativo.bat, detener-nativo.bat, construir-jars.bat, etc.)
+*.bat
+*.sh
+# Nota: el Maven Wrapper (mvnw y mvnw.cmd) NO queda ignorado a proposito,
+# para que el proyecto se pueda construir tras clonar.
+
+# ---------- Datos locales de bases de datos ----------
+# (los scripts SQL de "Bases de datos/" SI se versionan; aqui solo se
+#  ignoran datos/dumps/archivos de motor de BD generados localmente)
+*.mv.db
+*.trace.db
+*.h2.db
+*.db
+*.sqlite
+*.sqlite3
+*.mdf
+*.ldf
+data/
+**/data/
+**/db-data/
+**/mysql-data/
+*.sql.bak
+*.dump
+
+# ---------- Logs y temporales ----------
+*.log
+logs/
+*.tmp
+*.bak
+*.swp
+*~
+
+# ---------- IDE / editores ----------
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+nbproject/private/
+.apt_generated/
+
+# ---------- Sistema operativo ----------
+.DS_Store
+Thumbs.db
+desktop.ini
