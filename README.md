@@ -227,9 +227,6 @@ Cobertura de tests unitarios en los 10 microservicios de negocio, en las tres ca
 - **Controlador** — `MockMvc` standalone con el `GlobalExceptionHandler`.
 - **Repositorio** — `@DataJpaTest` con base de datos **H2** en memoria.
 
-Total: **31 clases de test** / **215 métodos `@Test`**. Detalle en `TESTS_README.md`
-y la arquitectura multi-módulo en `MULTIMODULO_README.md`.
-
 ---
 
 ## 📝 Changelog
