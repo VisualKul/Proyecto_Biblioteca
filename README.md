@@ -7,8 +7,8 @@ Utilice los siguientes enlaces externos para descargar las versiones listas para
 | Componente | Descripción | Enlace de Descarga (Nube externa) |
 | :--- | :--- | :--- |
 | **📦 Versión Sin Docker** <br>*(Arranque Nativo)* | Archivo `.zip` que contiene la carpeta `apps/` con los `.jar` compilados y el script `arrancar-nativo.bat` ordenado por fases. | [Descargar ZIP Nativo aquí](https://drive.google.com/drive/folders/1GsalC1TAFQZbySb_aux3RguYJAoXqfIL?usp=sharing) |
-| **🐳 Versión Con Docker** <br>*(Avance Examen Transversal)* | Archivo `.zip` que contiene la carpeta `apps/` con los `.jar`, el archivo `docker-compose.yml` y el script automatizado `arrancar-sistema.bat`. | [PENDIENTE] |
-| **🎥 Video de Defensa Técnica** <br>*(Evaluación Individual)* | Enlace directo al video explicativo donde se evidencia el funcionamiento, testing y el aporte técnico individual. **Duración ideal: 15 minutos (Máximo permitido: 18 minutos).** | [Enlace del video](https://www.youtube.com/watch?v=6g8FUE_jNdU) |
+| **🐳 Versión Con Docker** <br>*(Avance Examen Transversal)* | Archivo `.zip` que contiene la carpeta `apps/` con los `.jar`, el archivo `docker-compose.yml` y el script automatizado `arrancar-sistema.bat`. | [Descargar ZIP Docker aquí](https://drive.google.com/file/d/1Wxyuh_t4E3m5BEAxHcHaVXXsQLVJVmAK/view?usp=sharing)|
+| **🎥 Video de Defensa Técnica** <br>*(Evaluación Individual)* | Enlace directo al video explicativo donde se evidencia el funcionamiento, testing y el aporte técnico individual. **Duración ideal: 15 minutos (Máximo permitido: 18 minutos).** | [Enlace del video](https://www.youtube.com/watch?v=6g8FUE_jNdU) [Enlace del video Complementario EFT](https://www.youtube.com/watch?v=qxRT1DHdW2g) |
 
 
 
@@ -141,6 +141,86 @@ MySQL ni Eureka levantados.
 
 ---
 
+## 🐳 Arranque con Docker (paquete de despliegue)
+
+Alternativa al arranque nativo. La carpeta **`biblioteca-docker/`** (o el archivo
+`biblioteca-docker.zip`) es un **paquete de despliegue listo para el cliente**: no
+compila código, sino que ejecuta los `.jar` ya construidos sobre una imagen Java
+base, y levanta **MySQL dentro de Docker**. A diferencia del modo nativo, **no
+necesitas XAMPP ni ejecutar los scripts SQL a mano**: `docs/init.sql` crea las 10
+bases de datos y siembra los roles automáticamente en el primer arranque.
+
+**Contenido del paquete:** `apps/` (12 `.jar`), `docker-compose.yml`, `.env`,
+`docs/init.sql`, `backups/`, los scripts `.bat` y la documentación
+(`README-DESPLIEGUE-DOCKER.md`, `MANUAL-PUESTA-EN-MARCHA.md`).
+
+### Requisitos previos
+- **Docker Desktop** instalado y **abierto** (en estado *Running*).
+- Puertos libres: `3307`, `8080`, `8761` y `8081`–`8090`.
+
+Verificación rápida:
+
+```bat
+docker --version
+docker compose version
+docker info
+```
+
+### 1) Ubicarse en el paquete
+Descomprime `biblioteca-docker.zip` (o entra a la carpeta `biblioteca-docker/`) y
+sitúate dentro de ella.
+
+### 2) Arrancar el sistema
+Doble clic en:
+
+```bat
+arrancar-docker.bat
+```
+
+O por consola:
+
+```bat
+docker compose up -d
+```
+
+Con `-d` los contenedores quedan en segundo plano; puedes cerrar la ventana y el
+sistema sigue corriendo mientras Docker Desktop esté activo. La **primera vez**
+espera ~1 minuto a que MySQL cree las bases y los servicios se registren en Eureka.
+
+### 3) Verificar
+```bat
+docker compose ps
+```
+Todos los servicios en *running* y `biblioteca-mysql` como *healthy*. Luego:
+- Dashboard de Eureka: `http://localhost:8761` (deben aparecer los 12 registros).
+- API Gateway: `http://localhost:8080` (p. ej. `/api/users/...`).
+
+### 4) Ver logs
+```bat
+ver-logs.bat            REM  o:  docker compose logs -f
+```
+Para salir de la vista: `Ctrl + C` (solo cierra los logs, no detiene el sistema).
+
+### 5) Detener el sistema
+```bat
+detener-docker.bat      REM  o:  docker compose down
+```
+Detiene y elimina los contenedores **sin borrar los datos** (se conservan en el
+volumen `mysql-data`).
+
+> ⚠️ **No uses** `docker compose down -v`: elimina el volumen y borra los datos de MySQL.
+
+### 6) Respaldo y restauración de la BD
+```bat
+backup-db.bat           REM  genera un .sql en backups/
+restaurar-db.bat        REM  restaura un .sql desde backups/
+```
+
+> Guía técnica completa en `biblioteca-docker/README-DESPLIEGUE-DOCKER.md` y pasos
+> resumidos en `biblioteca-docker/MANUAL-PUESTA-EN-MARCHA.md`.
+
+---
+
 ## 📖 Documentación de la API (Swagger / OpenAPI)
 
 Cada microservicio expone su documentación interactiva con **springdoc-openapi**.
@@ -230,6 +310,24 @@ Cobertura de tests unitarios en los 10 microservicios de negocio, en las tres ca
 ---
 
 ## 📝 Changelog
+
+### v2.1 — Paquete de despliegue Docker (entrega al cliente)
+- **Nuevo paquete `biblioteca-docker/`** (+ `biblioteca-docker.zip`): entrega lista
+  para ejecutar siguiendo el modelo de puesta en marcha con Docker desde `.jar`.
+- **`docker-compose.yml` modelo cliente**: imagen base `eclipse-temurin:21-jre` con
+  cada `.jar` **montado como volumen** (`./apps/<servicio>.jar:/app/app.jar`), en vez
+  de compilar desde el código fuente. Orquesta MySQL + Eureka + 10 microservicios +
+  API Gateway sobre la red interna `biblioteca-net`.
+- **`.env`** que centraliza credenciales y nombres de las 10 bases de datos.
+- **`docs/init.sql`**: crea automáticamente las 10 BD y siembra los roles
+  (`ROLE_ADMIN`, `ROLE_SOCIO`, `ROLE_BIBLIOTECARIO`) en el primer arranque del volumen.
+- **Persistencia** de MySQL mediante el volumen `mysql-data` y `healthcheck` que
+  retrasa el arranque de los servicios hasta que la BD está *healthy*.
+- **Scripts de operación Windows**: `arrancar-docker.bat`, `detener-docker.bat`,
+  `ver-logs.bat`, `backup-db.bat` y `restaurar-db.bat` (respaldo/restauración en `backups/`).
+- **Documentación del despliegue**: `README-DESPLIEGUE-DOCKER.md` y
+  `MANUAL-PUESTA-EN-MARCHA.md` incluidos en el paquete.
+- **README**: nueva sección *"Arranque con Docker"* y enlaces de descarga actualizados.
 
 ### v2.0 — Entrega Final
 - **Migración a Maven multi-módulo**: nuevo POM padre `com.biblioteca:biblioteca-parent`
